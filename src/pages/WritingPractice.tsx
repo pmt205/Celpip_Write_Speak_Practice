@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PracticeTimer from '../components/PracticeTimer';
 import FeedbackCard from '../components/FeedbackCard';
 import { getRandomPrompt } from '../utils/promptGenerator';
-import { generateFeedback } from '../utils/feedbackEngine';
+import { generateFeedback, analyzeWithAI } from '../utils/feedbackEngine';
 import { addPracticeEntry, getUserStats, saveUserStats } from '../utils/storage';
 import { Prompt, FeedbackResult } from '../types';
 
@@ -11,6 +11,7 @@ type MicroSection = 'Opening' | 'Complaint' | 'Request' | 'Opinion' | 'Supportin
 
 function WritingPractice() {
   const [mode, setMode] = useState<WritingMode>('sentence-upgrade');
+  const [loading, setLoading] = useState(false);
 
   // Sentence Upgrade state
   const [suPrompt, setSuPrompt] = useState<Prompt | null>(() => getRandomPrompt('writing', 'sentence-upgrade'));
@@ -57,11 +58,13 @@ function WritingPractice() {
   };
 
   // Sentence Upgrade handlers
-  const handleSuSubmit = () => {
+  const handleSuSubmit = async () => {
     if (!suText.trim()) return;
-    const feedback = generateFeedback(suText);
+    setLoading(true);
+    const feedback = await analyzeWithAI(suText, 'sentence-upgrade');
     setSuFeedback(feedback);
     savePracticeEntry(suText, 'sentence-upgrade');
+    setLoading(false);
   };
 
   const handleSuNew = () => {
@@ -71,12 +74,14 @@ function WritingPractice() {
   };
 
   // Mini Writing handlers
-  const handleMwSubmit = () => {
+  const handleMwSubmit = async () => {
     if (!mwText.trim()) return;
-    const feedback = generateFeedback(mwText);
+    setLoading(true);
+    const feedback = await analyzeWithAI(mwText, 'mini-writing');
     setMwFeedback(feedback);
     setMwSubmitted(true);
     savePracticeEntry(mwText, 'mini-writing');
+    setLoading(false);
   };
 
   const handleMwTimerComplete = () => {
@@ -101,11 +106,13 @@ function WritingPractice() {
     setMsFeedback(null);
   };
 
-  const handleMsSubmit = () => {
+  const handleMsSubmit = async () => {
     if (!msText.trim()) return;
-    const feedback = generateFeedback(msText);
+    setLoading(true);
+    const feedback = await analyzeWithAI(msText, `micro-sections-${selectedSection.toLowerCase()}`);
     setMsFeedback(feedback);
     savePracticeEntry(msText, `micro-sections-${selectedSection.toLowerCase()}`);
+    setLoading(false);
   };
 
   const wordCount = (text: string) => {
@@ -163,10 +170,10 @@ function WritingPractice() {
           {!suFeedback ? (
             <button
               onClick={handleSuSubmit}
-              disabled={!suText.trim()}
+              disabled={!suText.trim() || loading}
               className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit
+              {loading ? 'Analyzing...' : 'Submit'}
             </button>
           ) : (
             <>
@@ -216,10 +223,10 @@ function WritingPractice() {
           {!mwSubmitted ? (
             <button
               onClick={handleMwSubmit}
-              disabled={!mwText.trim()}
+              disabled={!mwText.trim() || loading}
               className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit
+              {loading ? 'Analyzing...' : 'Submit'}
             </button>
           ) : (
             <>
@@ -276,10 +283,10 @@ function WritingPractice() {
           {!msFeedback ? (
             <button
               onClick={handleMsSubmit}
-              disabled={!msText.trim()}
+              disabled={!msText.trim() || loading}
               className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit
+              {loading ? 'Analyzing...' : 'Submit'}
             </button>
           ) : (
             <>
