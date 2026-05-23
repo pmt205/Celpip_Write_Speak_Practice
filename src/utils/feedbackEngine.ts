@@ -143,7 +143,22 @@ export async function analyzeWithAI(
   text: string,
   mode: string
 ): Promise<FeedbackResult> {
-  // Placeholder: falls back to rule-based analysis
-  // In the future, this could integrate with an AI API
-  return generateFeedback(text, mode);
+  try {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, mode }),
+    });
+
+    if (!response.ok) {
+      // Fall back to rule-based analysis on any HTTP error
+      return generateFeedback(text, mode);
+    }
+
+    const result: FeedbackResult = await response.json();
+    return result;
+  } catch {
+    // Network error or other failure - fall back to rule-based analysis
+    return generateFeedback(text, mode);
+  }
 }
