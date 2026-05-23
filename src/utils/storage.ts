@@ -18,7 +18,11 @@ export function getVocabBank(): VocabularyItem[] {
 }
 
 export function saveVocabBank(items: VocabularyItem[]): void {
-  localStorage.setItem(KEYS.vocabBank, JSON.stringify(items));
+  try {
+    localStorage.setItem(KEYS.vocabBank, JSON.stringify(items));
+  } catch {
+    // Silently handle QuotaExceededError
+  }
 }
 
 export function getPracticeHistory(): PracticeHistory[] {
@@ -30,12 +34,30 @@ export function getPracticeHistory(): PracticeHistory[] {
 }
 
 export function savePracticeHistory(history: PracticeHistory[]): void {
-  localStorage.setItem(KEYS.practiceHistory, JSON.stringify(history));
+  try {
+    localStorage.setItem(KEYS.practiceHistory, JSON.stringify(history));
+  } catch (e) {
+    // Handle QuotaExceededError gracefully by trimming older entries and retrying
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+      const trimmed = history.slice(0, Math.floor(history.length / 2));
+      try {
+        localStorage.setItem(KEYS.practiceHistory, JSON.stringify(trimmed));
+      } catch {
+        // If still failing, silently discard
+      }
+    }
+  }
 }
+
+const MAX_PRACTICE_HISTORY = 500;
 
 export function addPracticeEntry(entry: PracticeHistory): void {
   const history = getPracticeHistory();
   history.unshift(entry);
+  // Cap history at MAX_PRACTICE_HISTORY entries, trimming oldest
+  if (history.length > MAX_PRACTICE_HISTORY) {
+    history.length = MAX_PRACTICE_HISTORY;
+  }
   savePracticeHistory(history);
 }
 
@@ -58,7 +80,11 @@ export function getUserStats(): UserStats {
 }
 
 export function saveUserStats(stats: UserStats): void {
-  localStorage.setItem(KEYS.userStats, JSON.stringify(stats));
+  try {
+    localStorage.setItem(KEYS.userStats, JSON.stringify(stats));
+  } catch {
+    // Silently handle QuotaExceededError
+  }
 }
 
 export function updateStreak(): void {
@@ -100,7 +126,11 @@ export function getSavedAudio(): AudioRecording[] {
 export function saveAudio(recording: AudioRecording): void {
   const recordings = getSavedAudio();
   recordings.unshift(recording);
-  localStorage.setItem(KEYS.savedAudio, JSON.stringify(recordings));
+  try {
+    localStorage.setItem(KEYS.savedAudio, JSON.stringify(recordings));
+  } catch {
+    // Silently handle QuotaExceededError
+  }
 }
 
 export function markWordMastered(wordId: string): void {

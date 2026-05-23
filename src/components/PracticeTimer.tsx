@@ -14,16 +14,24 @@ function PracticeTimer({ duration, onComplete, autoStart = false, label }: Pract
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onCompleteRef = useRef(onComplete);
 
-  useEffect(() => {
-    onCompleteRef.current = onComplete;
-  }, [onComplete]);
-
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   }, []);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  // Sync timeLeft when duration prop changes
+  useEffect(() => {
+    setTimeLeft(duration);
+    setIsRunning(false);
+    setIsComplete(false);
+    clearTimer();
+  }, [duration, clearTimer]);
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {

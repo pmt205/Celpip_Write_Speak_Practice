@@ -134,10 +134,12 @@ function DailyPractice() {
     stats.totalSpeakingDrills += 1;
     stats.vocabularyPracticed += vocabItems.length;
     if (feedback) {
-      const totalDrills = stats.totalWritingDrills + stats.totalSpeakingDrills;
+      const previousTotal = (stats.totalWritingDrills - 1) + (stats.totalSpeakingDrills - 1);
+      const previousSessionCount = Math.floor(previousTotal / 2);
+      const newSessionCount = previousSessionCount + 1;
       stats.averageVocabularyScore = Math.round(
-        ((stats.averageVocabularyScore * (totalDrills - 2) + feedback.vocabularyScore) / (totalDrills - 1)) * 10
-      ) / 10 || feedback.vocabularyScore;
+        ((stats.averageVocabularyScore * previousSessionCount + feedback.vocabularyScore) / newSessionCount) * 10
+      ) / 10;
     }
     saveUserStats(stats);
 

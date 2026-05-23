@@ -62,7 +62,7 @@ export function analyzeSentence(text: string): {
 
 export function calculateVocabularyScore(text: string): 1 | 2 | 3 | 4 | 5 {
   const words = text.toLowerCase().split(/\s+/);
-  const totalWords = words.length;
+  const totalWords = words.filter((w) => w.replace(/[^a-z]/g, '').length > 0).length;
   if (totalWords === 0) return 1;
 
   let weakCount = 0;
@@ -74,6 +74,16 @@ export function calculateVocabularyScore(text: string): 1 | 2 | 3 | 4 | 5 {
   }
 
   const weakRatio = weakCount / totalWords;
+
+  // For very short inputs (fewer than 5 words), apply lenient scoring
+  // to avoid penalizing legitimate short responses in micro-sections mode
+  const MIN_WORD_THRESHOLD = 5;
+  if (totalWords < MIN_WORD_THRESHOLD) {
+    if (weakCount === 0) return 5;
+    // Floor the score at 3 for short inputs
+    if (weakRatio <= 0.5) return 4;
+    return 3;
+  }
 
   if (weakRatio === 0) return 5;
   if (weakRatio < 0.05) return 4;

@@ -59,6 +59,7 @@ function Dashboard() {
           icon={'\uD83D\uDD25'}
           onClick={() => {}}
           color="bg-orange-50"
+          darkColor="dark:bg-orange-950"
         />
         <DashboardCard
           title="Words Practiced"
@@ -66,6 +67,7 @@ function Dashboard() {
           icon={'\uD83D\uDCD6'}
           onClick={() => {}}
           color="bg-blue-50"
+          darkColor="dark:bg-blue-950"
         />
         <DashboardCard
           title="Weak Words"
@@ -73,6 +75,7 @@ function Dashboard() {
           icon={'\u26A0\uFE0F'}
           onClick={() => {}}
           color="bg-yellow-50"
+          darkColor="dark:bg-yellow-950"
         />
       </div>
 

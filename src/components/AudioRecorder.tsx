@@ -18,6 +18,13 @@ function AudioRecorder({ maxDuration = 30, onRecordingComplete }: AudioRecorderP
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const blobRef = useRef<Blob | null>(null);
+  const elapsedRef = useRef(0);
+  const audioUrlRef = useRef<string | null>(null);
+
+  // Keep audioUrlRef in sync with audioUrl state
+  useEffect(() => {
+    audioUrlRef.current = audioUrl;
+  }, [audioUrl]);
 
   const cleanup = useCallback(() => {
     if (timerRef.current) {
@@ -28,16 +35,16 @@ function AudioRecorder({ maxDuration = 30, onRecordingComplete }: AudioRecorderP
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
-    if (audioUrl) {
-      URL.revokeObjectURL(audioUrl);
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
     }
-  }, [audioUrl]);
+  }, []);
 
   useEffect(() => {
     return () => {
       cleanup();
     };
-  }, []);
+  }, [cleanup]);
 
   const startRecording = async () => {
     setError(null);
@@ -62,16 +69,18 @@ function AudioRecorder({ maxDuration = 30, onRecordingComplete }: AudioRecorderP
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         setState('recorded');
-        onRecordingComplete(blob, elapsed);
+        onRecordingComplete(blob, elapsedRef.current);
       };
 
       mediaRecorder.start();
       setState('recording');
       setElapsed(0);
+      elapsedRef.current = 0;
 
       timerRef.current = setInterval(() => {
         setElapsed((prev) => {
           const next = prev + 1;
+          elapsedRef.current = next;
           if (next >= maxDuration) {
             stopRecording();
           }

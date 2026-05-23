@@ -4,13 +4,15 @@ interface DashboardCardProps {
   icon: string;
   onClick: () => void;
   color: string;
+  darkColor?: string;
 }
 
-function DashboardCard({ title, value, icon, onClick, color }: DashboardCardProps) {
+function DashboardCard({ title, value, icon, onClick, color, darkColor }: DashboardCardProps) {
+  const darkBg = darkColor || 'dark:bg-gray-800';
   return (
     <button
       onClick={onClick}
-      className={`w-full p-4 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer ${color} dark:bg-gray-800 dark:text-white`}
+      className={`w-full p-4 rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer ${color} ${darkBg} dark:text-white`}
     >
       <div className="text-3xl mb-2">{icon}</div>
       <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>

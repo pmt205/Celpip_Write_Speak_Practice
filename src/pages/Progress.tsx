@@ -98,6 +98,7 @@ function Progress() {
           icon={'\uD83D\uDD25'}
           onClick={() => {}}
           color="bg-orange-50"
+          darkColor="dark:bg-orange-950"
         />
         <DashboardCard
           title="Writing Drills"
@@ -105,6 +106,7 @@ function Progress() {
           icon={'\u270F\uFE0F'}
           onClick={() => {}}
           color="bg-blue-50"
+          darkColor="dark:bg-blue-950"
         />
         <DashboardCard
           title="Speaking Drills"
@@ -112,6 +114,7 @@ function Progress() {
           icon={'\uD83C\uDF99\uFE0F'}
           onClick={() => {}}
           color="bg-purple-50"
+          darkColor="dark:bg-purple-950"
         />
         <DashboardCard
           title="Words Practiced"
@@ -119,6 +122,7 @@ function Progress() {
           icon={'\uD83D\uDCD6'}
           onClick={() => {}}
           color="bg-green-50"
+          darkColor="dark:bg-green-950"
         />
         <DashboardCard
           title="Mastered Words"
@@ -126,6 +130,7 @@ function Progress() {
           icon={'\u2B50'}
           onClick={() => {}}
           color="bg-amber-50"
+          darkColor="dark:bg-amber-950"
         />
         <DashboardCard
           title="Avg Score"
@@ -133,6 +138,7 @@ function Progress() {
           icon={'\uD83D\uDCCA'}
           onClick={() => {}}
           color="bg-cyan-50"
+          darkColor="dark:bg-cyan-950"
         />
       </div>
 
